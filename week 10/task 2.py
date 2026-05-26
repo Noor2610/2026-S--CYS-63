@@ -1,0 +1,6 @@
+n=input("what can i call u beautiful:")
+a=input("how old are u:")
+rn=input("enter ur roll no:")
+print(n)
+print(a)
+print(rn)

@@ -1,0 +1,10 @@
+s1={1,2,3}
+s2={5,6,7}
+s3={8,9,0}
+s2.update(s3)
+s1.update(s2)
+print(s1)
+print(s2)
+print(s3)
+s1.intersection_update(s2)
+print(s1)
