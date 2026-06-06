@@ -1,4 +1,4 @@
 Noor Ftaima
 Section :B
-B Cyber Security 
+Bs Cyber Security 
 # 2026-S--CYS-63
