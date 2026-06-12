@@ -1,0 +1,6 @@
+n = input("enter your name: ")
+age = input("enter your age: ")
+roll_no = input(" enter your roll no: ")
+print(n)
+print(age)
+print(roll_no)
