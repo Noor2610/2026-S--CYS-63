@@ -1,5 +1,0 @@
-bytes = float(input("Enter the number of bytes: "))
-mb = bytes / (1024 * 1024)
-gb = bytes / (1024 * 1024 * 1024)
-print("Megabytes (MB):", mb)
-print("Gigabytes (GB):", gb)
