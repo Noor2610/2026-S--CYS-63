@@ -1,0 +1,175 @@
+<app-navbar></app-navbar>
+
+<div class="dashboard-container">
+  <!-- HERO -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="greeting-badge">👋 Welcome back</div>
+      <h1 class="hero-title">Hello, <span class="highlight">{{ auth.currentUser?.name?.split(' ')[0] }}</span>!</h1>
+      <p class="hero-sub">Track and rate meals across all food establishments in one place.</p>
+    </div>
+    <div class="hero-cta">
+      <a routerLink="/add-meal" class="btn-primary">➕ Add Meal</a>
+      <a routerLink="/meals" class="btn-secondary">View All Meals</a>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <div class="stat-icon">🍽️</div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats.total }}</span>
+        <span class="stat-label">Total Meals</span>
+      </div>
+      <div class="stat-trend">Tracked</div>
+    </div>
+    <div class="stat-card top">
+      <div class="stat-icon">🏆</div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats.top }}</span>
+        <span class="stat-label">Top Rated</span>
+      </div>
+      <div class="stat-trend">Rating ≥ 8</div>
+    </div>
+    <div class="stat-card moderate">
+      <div class="stat-icon">👍</div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats.moderate }}</span>
+        <span class="stat-label">Moderate</span>
+      </div>
+      <div class="stat-trend">Rating 6–7.9</div>
+    </div>
+    <div class="stat-card low">
+      <div class="stat-icon">📉</div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats.low }}</span>
+        <span class="stat-label">Low Rated</span>
+      </div>
+      <div class="stat-trend">Rating &lt; 6</div>
+    </div>
+    <div class="stat-card avg">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats.avgOverall }}</span>
+        <span class="stat-label">Overall Avg</span>
+      </div>
+      <div class="stat-trend">Out of 10</div>
+    </div>
+  </div>
+
+  <!-- TWO COLUMN -->
+  <div class="two-col">
+    <!-- TOP MEALS -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2>🏆 Top Performers</h2>
+        <a routerLink="/meals" class="link-more">View all →</a>
+      </div>
+      <div class="top-meals-list">
+        <div class="top-meal-item" *ngFor="let meal of topMeals; let i = index">
+          <div class="rank-badge" [class]="'rank-' + (i+1)">{{ i + 1 }}</div>
+          <div class="meal-emoji">{{ meal.image }}</div>
+          <div class="meal-info">
+            <strong>{{ meal.name }}</strong>
+            <span class="restaurant-tag">{{ meal.restaurant }}</span>
+          </div>
+          <div class="meal-score">
+            <span class="score-value">{{ meal.averageRating }}</span>
+            <span class="score-label">/10</span>
+          </div>
+        </div>
+        <div class="empty-state" *ngIf="topMeals.length === 0">
+          <span>🍽️</span>
+          <p>No top-rated meals yet. Start rating!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORY BREAKDOWN -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2>📊 Performance Breakdown</h2>
+      </div>
+      <div class="breakdown-chart">
+        <div class="breakdown-bar-wrapper" *ngIf="stats.total > 0">
+          <div class="bar-row">
+            <span class="bar-label">🏆 Top Rated</span>
+            <div class="bar-track">
+              <div class="bar-fill top" [style.width.%]="(stats.top / stats.total) * 100"></div>
+            </div>
+            <span class="bar-count">{{ stats.top }}</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">👍 Moderate</span>
+            <div class="bar-track">
+              <div class="bar-fill moderate" [style.width.%]="(stats.moderate / stats.total) * 100"></div>
+            </div>
+            <span class="bar-count">{{ stats.moderate }}</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">📉 Low Rated</span>
+            <div class="bar-track">
+              <div class="bar-fill low" [style.width.%]="(stats.low / stats.total) * 100"></div>
+            </div>
+            <span class="bar-count">{{ stats.low }}</span>
+          </div>
+        </div>
+        <div class="empty-state" *ngIf="stats.total === 0">
+          <span>📊</span>
+          <p>No data yet to visualize.</p>
+        </div>
+
+        <div class="legend" *ngIf="stats.total > 0">
+          <div class="legend-item">
+            <span class="dot top"></span>
+            <span>Top (≥8.0) — Best quality meals</span>
+          </div>
+          <div class="legend-item">
+            <span class="dot moderate"></span>
+            <span>Moderate (6–7.9) — Good meals</span>
+          </div>
+          <div class="legend-item">
+            <span class="dot low"></span>
+            <span>Low (&lt;6) — Needs improvement</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECENT MEALS -->
+  <div class="section-card full-width">
+    <div class="section-header">
+      <h2>🕐 Recently Added</h2>
+      <a routerLink="/meals" class="link-more">View all →</a>
+    </div>
+    <div class="meals-grid">
+      <div class="meal-card" *ngFor="let meal of recentMeals" [routerLink]="['/meals', meal.id]">
+        <div class="meal-card-header">
+          <span class="meal-card-emoji">{{ meal.image }}</span>
+          <span class="meal-cat-badge">{{ meal.category }}</span>
+        </div>
+        <div class="meal-card-body">
+          <h3>{{ meal.name }}</h3>
+          <p class="meal-restaurant">📍 {{ meal.restaurant }}</p>
+          <p class="meal-desc">{{ meal.description }}</p>
+        </div>
+        <div class="meal-card-footer">
+          <div class="rating-display">
+            <span class="rating-num">{{ meal.averageRating }}</span>
+            <span class="rating-denom">/10</span>
+            <span class="rating-count">({{ meal.ratings.length }} ratings)</span>
+          </div>
+          <span class="perf-badge" [class]="getCategoryClass(meal.performanceCategory)">
+            {{ getCategoryLabel(meal.performanceCategory) }}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="empty-state centered" *ngIf="recentMeals.length === 0">
+      <span>🍴</span>
+      <p>No meals added yet. <a routerLink="/add-meal">Add the first one!</a></p>
+    </div>
+  </div>
+</div>
