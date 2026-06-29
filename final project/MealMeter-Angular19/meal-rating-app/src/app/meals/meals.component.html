@@ -1,0 +1,119 @@
+<app-navbar></app-navbar>
+
+<div class="meals-container">
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <h1>🍴 All Meals</h1>
+      <p>{{ filteredMeals.length }} of {{ allMeals.length }} meals</p>
+    </div>
+    <a routerLink="/add-meal" class="btn-add">➕ Add Meal</a>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters-bar">
+    <div class="search-wrapper">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="applyFilters()"
+        placeholder="Search meals, restaurants..."
+        class="search-input"
+      />
+      <button *ngIf="searchTerm" class="clear-search" (click)="searchTerm=''; applyFilters()">✕</button>
+    </div>
+
+    <select [(ngModel)]="filterCategory" (ngModelChange)="applyFilters()" class="filter-select">
+      <option value="">All Categories</option>
+      <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+    </select>
+
+    <select [(ngModel)]="filterPerformance" (ngModelChange)="applyFilters()" class="filter-select">
+      <option value="">All Performance</option>
+      <option value="top">🏆 Top Rated</option>
+      <option value="moderate">👍 Moderate</option>
+      <option value="low">📉 Low Rated</option>
+    </select>
+
+    <select [(ngModel)]="filterRestaurant" (ngModelChange)="applyFilters()" class="filter-select">
+      <option value="">All Restaurants</option>
+      <option *ngFor="let r of restaurants" [value]="r">{{ r }}</option>
+    </select>
+
+    <select [(ngModel)]="sortBy" (ngModelChange)="applyFilters()" class="filter-select">
+      <option value="newest">Newest First</option>
+      <option value="rating-high">Highest Rating</option>
+      <option value="rating-low">Lowest Rating</option>
+      <option value="name">Name A–Z</option>
+      <option value="most-rated">Most Rated</option>
+    </select>
+
+    <button *ngIf="hasActiveFilters" (click)="clearFilters()" class="btn-clear">Clear Filters</button>
+
+    <div class="view-toggle">
+      <button [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'" title="Grid View">⊞</button>
+      <button [class.active]="viewMode === 'list'" (click)="viewMode = 'list'" title="List View">☰</button>
+    </div>
+  </div>
+
+  <!-- GRID VIEW -->
+  <div class="meals-grid" *ngIf="viewMode === 'grid' && filteredMeals.length > 0">
+    <div class="meal-card" *ngFor="let meal of filteredMeals" [routerLink]="['/meals', meal.id]">
+      <div class="card-header">
+        <span class="meal-emoji">{{ meal.image }}</span>
+        <div class="card-badges">
+          <span class="cat-badge">{{ meal.category }}</span>
+          <span class="perf-badge" [class]="getCategoryClass(meal.performanceCategory)">
+            {{ getCategoryLabel(meal.performanceCategory) }}
+          </span>
+        </div>
+      </div>
+      <div class="card-body">
+        <h3>{{ meal.name }}</h3>
+        <p class="restaurant">📍 {{ meal.restaurant }}</p>
+        <p class="desc">{{ meal.description }}</p>
+      </div>
+      <div class="card-footer">
+        <div class="rating">
+          <span class="rating-value">{{ meal.averageRating }}</span>
+          <span class="rating-max">/10</span>
+          <span class="rating-count">· {{ meal.ratings.length }} votes</span>
+        </div>
+        <div class="card-actions" *ngIf="auth.isAdmin">
+          <button class="btn-delete" (click)="deleteMeal(meal.id, $event)" title="Delete">🗑️</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIST VIEW -->
+  <div class="meals-list-view" *ngIf="viewMode === 'list' && filteredMeals.length > 0">
+    <div class="list-item" *ngFor="let meal of filteredMeals" [routerLink]="['/meals', meal.id]">
+      <span class="list-emoji">{{ meal.image }}</span>
+      <div class="list-info">
+        <div class="list-main">
+          <h3>{{ meal.name }}</h3>
+          <span class="cat-badge">{{ meal.category }}</span>
+        </div>
+        <p>📍 {{ meal.restaurant }} · {{ meal.description }}</p>
+      </div>
+      <div class="list-rating">
+        <span class="rating-value">{{ meal.averageRating }}</span>
+        <span>/10</span>
+        <span class="perf-badge" [class]="getCategoryClass(meal.performanceCategory)">
+          {{ getCategoryLabel(meal.performanceCategory) }}
+        </span>
+      </div>
+      <button class="btn-delete" *ngIf="auth.isAdmin" (click)="deleteMeal(meal.id, $event)">🗑️</button>
+    </div>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div class="empty-state" *ngIf="filteredMeals.length === 0">
+    <div class="empty-icon">🍽️</div>
+    <h3>No meals found</h3>
+    <p *ngIf="hasActiveFilters">Try adjusting your filters or <button (click)="clearFilters()" class="link-btn">clear all filters</button></p>
+    <p *ngIf="!hasActiveFilters">No meals yet. <a routerLink="/add-meal">Add the first one!</a></p>
+  </div>
+</div>

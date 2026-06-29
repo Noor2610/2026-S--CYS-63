@@ -1,0 +1,131 @@
+<app-navbar></app-navbar>
+
+<div class="detail-container" *ngIf="meal">
+  <!-- BACK -->
+  <a routerLink="/meals" class="back-link">← Back to All Meals</a>
+
+  <!-- HERO -->
+  <div class="meal-hero">
+    <div class="hero-left">
+      <div class="meal-big-emoji">{{ meal.image }}</div>
+      <div class="hero-info">
+        <div class="hero-tags">
+          <span class="cat-tag">{{ meal.category }}</span>
+          <span class="perf-tag" [class]="getCategoryClass(meal.performanceCategory)">
+            {{ getCategoryLabel(meal.performanceCategory) }}
+          </span>
+        </div>
+        <h1>{{ meal.name }}</h1>
+        <p class="restaurant">📍 {{ meal.restaurant }}</p>
+        <p class="desc">{{ meal.description }}</p>
+        <div class="hero-meta">
+          <span>📅 Added {{ meal.createdAt }}</span>
+          <span>👤 by {{ meal.addedBy }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-score-panel">
+      <div class="big-score">
+        <span class="score-num" [style.color]="getRatingColor(meal.averageRating || 0)">
+          {{ meal.averageRating }}
+        </span>
+        <span class="score-denom">/10</span>
+      </div>
+      <p class="score-label">Average Rating</p>
+      <div class="score-votes">{{ meal.ratings.length }} total vote{{ meal.ratings.length !== 1 ? 's' : '' }}</div>
+
+      <div class="admin-actions" *ngIf="auth.isAdmin">
+        <button class="btn-danger" (click)="deleteMeal()">🗑️ Delete Meal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TWO COL -->
+  <div class="detail-grid">
+    <!-- RATING SUBMISSION -->
+    <div class="section-card">
+      <h2>⭐ Rate This Meal</h2>
+
+      <div class="success-banner" *ngIf="submitSuccess">
+        ✅ Your rating has been submitted!
+      </div>
+
+      <div *ngIf="!ratingSubmitted">
+        <p class="rating-prompt">How would you rate <strong>{{ meal.name }}</strong>?</p>
+        <div class="rating-buttons">
+          <button
+            *ngFor="let n of ratingNumbers"
+            class="rating-btn"
+            [class.selected]="selectedRating === n"
+            [class.hover]="hoverRating >= n && selectedRating === 0"
+            (mouseenter)="hoverRating = n"
+            (mouseleave)="hoverRating = 0"
+            (click)="selectedRating = n"
+          >{{ n }}</button>
+        </div>
+        <div class="selected-label" *ngIf="selectedRating > 0">
+          <span>Selected: </span>
+          <strong [style.color]="getRatingColor(selectedRating)">{{ selectedRating }}/10</strong>
+          <span *ngIf="selectedRating >= 8"> — Excellent! 🌟</span>
+          <span *ngIf="selectedRating >= 6 && selectedRating < 8"> — Good 👍</span>
+          <span *ngIf="selectedRating < 6"> — Needs Improvement 📉</span>
+        </div>
+        <div class="rating-actions">
+          <button class="btn-submit" (click)="submitRating()" [disabled]="selectedRating === 0">
+            Submit Rating
+          </button>
+          <button class="btn-reset" (click)="selectedRating = 0" *ngIf="selectedRating > 0">
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <div class="already-rated" *ngIf="ratingSubmitted && !submitSuccess">
+        <p>✅ You've rated this meal <strong>{{ selectedRating }}/10</strong></p>
+        <button class="link-btn" (click)="resetRating()">Rate again</button>
+      </div>
+    </div>
+
+    <!-- RATING DISTRIBUTION -->
+    <div class="section-card">
+      <h2>📊 Rating Distribution</h2>
+      <div class="distribution">
+        <div class="dist-row" *ngFor="let n of ratingNumbers.slice().reverse()">
+          <span class="dist-label">{{ n }}</span>
+          <div class="dist-track">
+            <div class="dist-fill"
+              [style.width.%]="getRatingBarWidth(n)"
+              [style.background]="getRatingColor(n)">
+            </div>
+          </div>
+          <span class="dist-count">{{ getRatingCount(n) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS SUMMARY -->
+  <div class="summary-row">
+    <div class="summary-card">
+      <span class="sum-icon">📈</span>
+      <span class="sum-value">{{ highestRating }}</span>
+      <span class="sum-label">Highest</span>
+    </div>
+    <div class="summary-card">
+      <span class="sum-icon">📉</span>
+      <span class="sum-value">{{ lowestRating }}</span>
+      <span class="sum-label">Lowest</span>
+    </div>
+    <div class="summary-card">
+      <span class="sum-icon">⭐</span>
+      <span class="sum-value">{{ averageRating }}</span>
+      <span class="sum-label">Average</span>
+    </div>
+    <div class="summary-card">
+      <span class="sum-icon">🗳️</span>
+      <span class="sum-value">{{ totalVotes }}</span>
+      <span class="sum-label">Total Votes</span>
+    </div>
+  </div>
+</div>
